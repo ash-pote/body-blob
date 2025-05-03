@@ -6,7 +6,6 @@ import { marchingCubes, metaBalls, gridHelper } from "./MarchingCubes";
 
 // ==== Constants ====
 const NOSE_TIP_INDEX = 1;
-const HAND_INDEX = 20;
 
 // ==== DOM Setup ====
 const container = document.getElementById("container");
@@ -87,13 +86,16 @@ const holistic = new Holistic({
   locateFile: (file) =>
     `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`,
 });
+
 holistic.setOptions({
-  modelComplexity: 1,
-  smoothLandmarks: true,
+  modelComplexity: 0,
+  smoothLandmarks: false,
   enableSegmentation: false,
-  refineFaceLandmarks: true,
+  refineFaceLandmarks: false,
   minDetectionConfidence: 0.5,
   minTrackingConfidence: 0.5,
+  // Disable hand and face detection to focus on pose only
+  selfieMode: true,
 });
 
 holistic.onResults((results) => {
@@ -108,7 +110,8 @@ holistic.onResults((results) => {
 
   metaBalls.length = 0;
 
-  console.log(results);
+  console.log("Results from MediaPipe Holistic:");
+  console.log(results.leftHandLandmarks); // Log the whole results object to see the full structure
 
   // === Add Nose Tip Landmark Only ===
   const nose = results.faceLandmarks?.[NOSE_TIP_INDEX];
@@ -122,65 +125,46 @@ holistic.onResults((results) => {
     metaBalls.push({ center: point, radius: 1.1 });
   }
 
-  const leftHand = results.leftHandLandmarks?.[HAND_INDEX];
-  if (leftHand) {
-    const point = new THREE.Vector3(
-      (leftHand.x - 0.5) * 10,
-      -(leftHand.y - 0.5) * 5,
-      (leftHand.z || 0) * 10
-    );
-    metaBalls.push({ center: point, radius: 0.1 });
-  }
-
-  // const rightHand = results.leftHandLandmarks?.[19];
-  // if (rightHand) {
+  // const leftElbow = results.poseLandmarks?.[13];
+  // if (leftElbow) {
   //   const point = new THREE.Vector3(
-  //     (rightHand.x - 0.5) * 25,
-  //     -(rightHand.y - 0.5) * 5,
-  //     (rightHand.z || 0) * 10
+  //     (leftElbow.x - 0.5) * 35,
+  //     -(leftElbow.y - 0.5) * 10,
+  //     (leftElbow.z || 0) * 10
   //   );
   //   metaBalls.push({ center: point, radius: 0.1 });
   // }
 
-  const leftElbow = results.poseLandmarks?.[13];
-  if (leftElbow) {
+  const leftIndexTip = results.leftHandLandmarks?.[8]; // Left hand index finger tip (Landmark 8)
+  if (leftIndexTip) {
     const point = new THREE.Vector3(
-      (leftElbow.x - 0.5) * 20,
-      -(leftElbow.y - 0.5) * 10,
-      (leftElbow.z || 0) * 10
+      (leftIndexTip.x - 0.5) * 20, // Map x to [-5, 5] range
+      -(leftIndexTip.y - 0.5) * 5,
+      // Map y to [-5, 5] range
+      (leftIndexTip.z || 0) * 10 // Map z directly (scaled)
     );
-    metaBalls.push({ center: point, radius: 0.1 });
+    metaBalls.push({ center: point, radius: 0.1 }); // Add the left index tip as a MetaBall
   }
 
-  const rightElbow = results.poseLandmarks?.[14];
-  if (rightElbow) {
+  // const rightElbow = results.poseLandmarks?.[14];
+  // if (rightElbow) {
+  //   const point = new THREE.Vector3(
+  //     (rightElbow.x - 0.5) * 35,
+  //     -(rightElbow.y - 0.5) * 10,
+  //     (rightElbow.z || 0) * 10
+  //   );
+  //   metaBalls.push({ center: point, radius: 0.1 });
+  // }
+
+  const rightIndexTip = results.rightHandLandmarks?.[8]; // Right hand index finger tip (Landmark 8)
+  if (rightIndexTip) {
     const point = new THREE.Vector3(
-      (rightElbow.x - 0.5) * 25,
-      -(rightElbow.y - 0.5) * 10,
-      (rightElbow.z || 0) * 10
+      (rightIndexTip.x - 0.5) * 20, // Map x to [-5, 5] range
+      -(rightIndexTip.y - 0.5) * 5, // Map y to [-5, 5] range
+      (rightIndexTip.z || 0) * 10 // Map z directly (scaled)
     );
-    metaBalls.push({ center: point, radius: 0.1 });
+    metaBalls.push({ center: point, radius: 0.1 }); // Add the right index tip as a MetaBall
   }
-
-  // const leftKnee = results.poseLandmarks?.[25];
-  // if (leftKnee) {
-  //   const point = new THREE.Vector3(
-  //     (leftKnee.x - 0.5) * 10,
-  //     -(leftKnee.y - 0.5) * 10,
-  //     (leftKnee.z || 0) * 10
-  //   );
-  //   metaBalls.push({ center: point, radius: 0.01 });
-  // }
-
-  // const rightKnee = results.poseLandmarks?.[26];
-  // if (rightKnee) {
-  //   const point = new THREE.Vector3(
-  //     (rightKnee.x - 0.5) * 10,
-  //     -(rightKnee.y - 0.5) * 10,
-  //     (rightKnee.z || 0) * 10
-  //   );
-  //   metaBalls.push({ center: point, radius: 0.01 });
-  // }
 
   // === Torso Center Landmark ===
   if (results.poseLandmarks) {
