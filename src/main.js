@@ -38,10 +38,13 @@ const camera = new THREE.PerspectiveCamera(
   0.01,
   1000
 );
+
 camera.position.set(0, 0, 20);
 scene.add(camera);
 
-scene.add(gridHelper);
+// scene.add(gridHelper);
+
+scene.background = new THREE.Color(0x000000);
 
 const renderer = new THREE.WebGLRenderer({
   antialias: true,
@@ -49,8 +52,6 @@ const renderer = new THREE.WebGLRenderer({
 });
 renderer.setPixelRatio(sizes.pixelRatio);
 renderer.setSize(sizes.width, sizes.height);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 3;
 container.appendChild(renderer.domElement);
@@ -59,26 +60,76 @@ container.appendChild(renderer.domElement);
 new RGBELoader().load("./urban_alley_01_1k.hdr", (envMap) => {
   envMap.mapping = THREE.EquirectangularReflectionMapping;
   scene.environment = envMap;
-  scene.background = envMap;
+  // scene.background = envMap;
 });
 
-// ==== Lights ====
-scene.add(new THREE.AmbientLight(0xffffff, 0.4));
-const dirLight = new THREE.DirectionalLight(0xffffff, 1);
-dirLight.position.set(0.5, 1, 1);
-scene.add(dirLight);
+//beam
+// Declare spotlight first
+// const spotLight = new THREE.SpotLight(
+//   0x00ff00,
+//   10.5,
+//   10,
+//   Math.PI * 0.1,
+//   0.75,
+//   1
+// );
+// spotLight.position.set(0, 3, 0);
+// scene.add(spotLight);
+
+// // Add target
+// spotLight.target.position.set(0, 3, 0);
+// scene.add(spotLight.target);
+
+// THEN create beam
+// const beamGeometry = new THREE.CylinderGeometry(
+//   3, // top radius (wider opening)
+//   4, // bottom radius (narrow)
+//   22, // height
+//   32, // radial segments
+//   1, // height segments
+//   true // open-ended
+// );
+
+// const beamMaterial = new THREE.MeshBasicMaterial({
+//   color: 0x00ff00,
+//   transparent: true,
+//   opacity: 0.1,
+//   depthWrite: false,
+//   side: THREE.DoubleSide,
+// });
+// const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+// beam.position.copy(spotLight.position);
+// beam.lookAt(spotLight.target.position);
+// scene.add(beam);
+
+// scene.fog = new THREE.Fog(0x000000, 5, 40); // color, near, far
+
+/**
+ * Plane
+ */
+// const plane = new THREE.Mesh(
+//   new THREE.CircleGeometry(10.5, 64), // radius, segments
+//   new THREE.MeshStandardMaterial({
+//     envMap: scene.environment,
+//   })
+// );
+// plane.rotation.x = -1.5;
+// plane.position.set(0, -4, 0);
+// scene.add(plane);
 
 // ==== Flubber Material ====
 const blobMaterial = new THREE.MeshPhysicalMaterial({
   color: "#00ff00",
   metalness: 0.1,
-  roughness: 0.25,
-  transmission: 1.0,
+  roughness: 0.05,
+  transmission: 0.1,
   ior: 1.5,
   thickness: 2,
   transparent: true,
   opacity: 0.75,
   side: THREE.DoubleSide,
+  envMap: scene.environment, // Use the scene's environment map for reflections
+  reflectivity: 1, // This makes it reflective
 });
 
 // ==== MediaPipe Holistic Setup ====
@@ -109,9 +160,6 @@ holistic.onResults((results) => {
   );
 
   metaBalls.length = 0;
-
-  console.log("Results from MediaPipe Holistic:");
-  console.log(results.leftHandLandmarks); // Log the whole results object to see the full structure
 
   // === Add Nose Tip Landmark Only ===
   const nose = results.faceLandmarks?.[NOSE_TIP_INDEX];
@@ -237,11 +285,22 @@ function updateBlobMesh(trianglePoints) {
 
   const mesh = new THREE.Mesh(geometry, blobMaterial);
   mesh.userData.isBlob = true;
-  mesh.castShadow = true;
-  mesh.receiveShadow = true;
 
   scene.add(mesh);
 }
+
+// const plane2 = new THREE.Mesh(
+//   new THREE.CircleGeometry(10.5, 64), // radius, segments
+//   new THREE.MeshStandardMaterial({
+//     envMap: scene.environment,
+//     reflectivity: 1,
+//     side: THREE.DoubleSide, // recommended to avoid one-sided rendering
+//   })
+// );
+// plane2.receiveShadow = true;
+// plane2.rotation.y = -1.6;
+// plane2.position.set(-6, 0, -2);
+// scene.add(plane2);
 
 // ==== Animation Loop ====
 function render() {
