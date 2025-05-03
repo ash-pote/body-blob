@@ -3,6 +3,10 @@ import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
 import { marchingCubes, metaBalls, gridHelper } from "./MarchingCubes";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import CustomShaderMaterial from "three-custom-shader-material/vanilla";
+import wobbleVertexShader from "./shaders/wobble/vertex.glsl";
+import wobbleFragmentShader from "./shaders/wobble/fragment.glsl";
 
 // ==== Constants ====
 const NOSE_TIP_INDEX = 1;
@@ -104,25 +108,12 @@ new RGBELoader().load("./urban_alley_01_1k.hdr", (envMap) => {
 
 // scene.fog = new THREE.Fog(0x000000, 5, 40); // color, near, far
 
-/**
- * Plane
- */
-// const plane = new THREE.Mesh(
-//   new THREE.CircleGeometry(10.5, 64), // radius, segments
-//   new THREE.MeshStandardMaterial({
-//     envMap: scene.environment,
-//   })
-// );
-// plane.rotation.x = -1.5;
-// plane.position.set(0, -4, 0);
-// scene.add(plane);
-
 // ==== Flubber Material ====
 const blobMaterial = new THREE.MeshPhysicalMaterial({
   color: "#00ff00",
   metalness: 0.1,
   roughness: 0.05,
-  transmission: 0.1,
+  transmission: 0.9,
   ior: 1.5,
   thickness: 2,
   transparent: true,
@@ -131,6 +122,66 @@ const blobMaterial = new THREE.MeshPhysicalMaterial({
   envMap: scene.environment, // Use the scene's environment map for reflections
   reflectivity: 1, // This makes it reflective
 });
+
+const uniforms = {
+  uTime: new THREE.Uniform(0),
+  uPositionFrequency: new THREE.Uniform(0.1),
+  uTimeFrequency: new THREE.Uniform(0.4),
+  uStrength: new THREE.Uniform(0.3),
+  uWarpPositionFrequency: new THREE.Uniform(0.38),
+  uWarpTimeFrequency: new THREE.Uniform(0.12),
+  uWarpStrength: new THREE.Uniform(1.7),
+  // uColorA: new THREE.Uniform(new THREE.Color(`hsl(10, 100%, 50%)`)),
+  uColorA: new THREE.Uniform(new THREE.Color(0x00ff00)),
+  uColorB: new THREE.Uniform(new THREE.Color(0x00ff00)),
+};
+
+const uniforms2 = {
+  ...uniforms,
+  uColorA: new THREE.Uniform(new THREE.Color(0x0000ff)), // Set to a different color, e.g., blue
+};
+
+const material = new CustomShaderMaterial({
+  // CSM
+  baseMaterial: THREE.MeshPhysicalMaterial,
+  vertexShader: wobbleVertexShader,
+  fragmentShader: wobbleFragmentShader,
+  uniforms: uniforms,
+  silent: true,
+  flatShading: true,
+
+  // MeshPhysicalMaterial
+  metalness: 0,
+  roughness: 0.2,
+  color: "#00ff00",
+  transmission: 0.9,
+  ior: 1.5,
+  thickness: 1.5,
+  transparent: true,
+  wireframe: false,
+  envMap: scene.environment,
+  reflectivity: 1,
+});
+
+const depthMaterial = new CustomShaderMaterial({
+  // CSM
+  baseMaterial: THREE.MeshDepthMaterial,
+  vertexShader: wobbleVertexShader,
+  uniforms: uniforms,
+  silent: true,
+
+  // MeshDepthMaterial
+  depthPacking: THREE.RGBADepthPacking,
+});
+
+let geometry2 = new THREE.IcosahedronGeometry(2.5, 50);
+geometry2 = mergeVertices(geometry2);
+geometry2.computeTangents();
+
+const wobble = new THREE.Mesh(geometry2, material);
+wobble.customDepthMaterial = depthMaterial;
+wobble.position.set(1, 1, 1);
+// scene.add(wobble);
 
 // ==== MediaPipe Holistic Setup ====
 const holistic = new Holistic({
@@ -279,11 +330,13 @@ function updateBlobMesh(trianglePoints) {
     vertices[i * 3 + 2] = p.z;
   }
 
-  const geometry = new THREE.BufferGeometry();
+  let geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
+  geometry = mergeVertices(geometry);
   geometry.computeVertexNormals();
 
-  const mesh = new THREE.Mesh(geometry, blobMaterial);
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.customDepthMaterial = depthMaterial;
   mesh.userData.isBlob = true;
 
   scene.add(mesh);
@@ -313,6 +366,25 @@ function animate() {
 }
 
 animate();
+
+/**
+ * Animate
+ */
+const clock = new THREE.Clock();
+
+const tick = () => {
+  const elapsedTime = clock.getElapsedTime();
+
+  uniforms.uTime.value = elapsedTime;
+
+  // Render
+  renderer.render(scene, camera);
+
+  // Call tick again on the next frame
+  window.requestAnimationFrame(tick);
+};
+
+tick();
 
 // ==== Resize Handling ====
 window.addEventListener("resize", () => {

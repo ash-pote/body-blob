@@ -15,6 +15,10 @@
     "@mediapipe/camera_utils": "^0.3.1675466862",
     "@mediapipe/holistic": "^0.5.1675471629",
     "@mediapipe/pose": "^0.5.1675469404",
-    "three": "^0.176.0"
+    "three": "^0.176.0",
+    "three-custom-shader-material": "^6.3.5",
+    "three-subdivide": "^1.1.5",
+    "vite-plugin-glsl": "^1.4.1",
+    "vite-plugin-restart": "^0.4.2"
   }
 }
