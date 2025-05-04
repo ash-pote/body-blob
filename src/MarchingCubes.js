@@ -3,7 +3,7 @@
 import * as THREE from "three";
 import { edgeTable, triTable } from "./LookupTables";
 
-const resolution = 160;
+const resolution = 60;
 const scale = 10;
 const domain = 20; // larger than scale
 
