@@ -3,10 +3,10 @@ import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
 import { marchingCubes, metaBalls, gridHelper } from "./MarchingCubes";
-import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
-import CustomShaderMaterial from "three-custom-shader-material/vanilla";
-import wobbleVertexShader from "./shaders/wobble/vertex.glsl";
-import wobbleFragmentShader from "./shaders/wobble/fragment.glsl";
+// import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+// import CustomShaderMaterial from "three-custom-shader-material/vanilla";
+// import wobbleVertexShader from "./shaders/wobble/vertex.glsl";
+// import wobbleFragmentShader from "./shaders/wobble/fragment.glsl";
 
 // ==== Constants ====
 const NOSE_TIP_INDEX = 1;
@@ -123,64 +123,64 @@ const blobMaterial = new THREE.MeshPhysicalMaterial({
   reflectivity: 1, // This makes it reflective
 });
 
-const uniforms = {
-  uTime: new THREE.Uniform(0),
-  uPositionFrequency: new THREE.Uniform(0.1),
-  uTimeFrequency: new THREE.Uniform(0.4),
-  uStrength: new THREE.Uniform(0.3),
-  uWarpPositionFrequency: new THREE.Uniform(0.38),
-  uWarpTimeFrequency: new THREE.Uniform(0.12),
-  uWarpStrength: new THREE.Uniform(1.7),
-  // uColorA: new THREE.Uniform(new THREE.Color(`hsl(10, 100%, 50%)`)),
-  uColorA: new THREE.Uniform(new THREE.Color(0x00ff00)),
-  uColorB: new THREE.Uniform(new THREE.Color(0x00ff00)),
-};
+// const uniforms = {
+//   uTime: new THREE.Uniform(0),
+//   uPositionFrequency: new THREE.Uniform(0.1),
+//   uTimeFrequency: new THREE.Uniform(0.4),
+//   uStrength: new THREE.Uniform(0.3),
+//   uWarpPositionFrequency: new THREE.Uniform(0.38),
+//   uWarpTimeFrequency: new THREE.Uniform(0.12),
+//   uWarpStrength: new THREE.Uniform(1.7),
+//   // uColorA: new THREE.Uniform(new THREE.Color(`hsl(10, 100%, 50%)`)),
+//   uColorA: new THREE.Uniform(new THREE.Color(0x00ff00)),
+//   uColorB: new THREE.Uniform(new THREE.Color(0x00ff00)),
+// };
 
-const uniforms2 = {
-  ...uniforms,
-  uColorA: new THREE.Uniform(new THREE.Color(0x0000ff)), // Set to a different color, e.g., blue
-};
+// const uniforms2 = {
+//   ...uniforms,
+//   uColorA: new THREE.Uniform(new THREE.Color(0x0000ff)), // Set to a different color, e.g., blue
+// };
 
-const material = new CustomShaderMaterial({
-  // CSM
-  baseMaterial: THREE.MeshPhysicalMaterial,
-  vertexShader: wobbleVertexShader,
-  fragmentShader: wobbleFragmentShader,
-  uniforms: uniforms,
-  silent: true,
-  flatShading: true,
+// const material = new CustomShaderMaterial({
+//   // CSM
+//   baseMaterial: THREE.MeshPhysicalMaterial,
+//   vertexShader: wobbleVertexShader,
+//   fragmentShader: wobbleFragmentShader,
+//   uniforms: uniforms,
+//   silent: true,
+//   flatShading: true,
 
-  // MeshPhysicalMaterial
-  metalness: 0,
-  roughness: 0.2,
-  color: "#00ff00",
-  transmission: 0.9,
-  ior: 1.5,
-  thickness: 1.5,
-  transparent: true,
-  wireframe: false,
-  envMap: scene.environment,
-  reflectivity: 1,
-});
+//   // MeshPhysicalMaterial
+//   metalness: 0,
+//   roughness: 0.2,
+//   color: "#00ff00",
+//   transmission: 0.9,
+//   ior: 1.5,
+//   thickness: 1.5,
+//   transparent: true,
+//   wireframe: false,
+//   envMap: scene.environment,
+//   reflectivity: 1,
+// });
 
-const depthMaterial = new CustomShaderMaterial({
-  // CSM
-  baseMaterial: THREE.MeshDepthMaterial,
-  vertexShader: wobbleVertexShader,
-  uniforms: uniforms,
-  silent: true,
+// const depthMaterial = new CustomShaderMaterial({
+//   // CSM
+//   baseMaterial: THREE.MeshDepthMaterial,
+//   vertexShader: wobbleVertexShader,
+//   uniforms: uniforms,
+//   silent: true,
 
-  // MeshDepthMaterial
-  depthPacking: THREE.RGBADepthPacking,
-});
+//   // MeshDepthMaterial
+//   depthPacking: THREE.RGBADepthPacking,
+// });
 
-let geometry2 = new THREE.IcosahedronGeometry(2.5, 50);
-geometry2 = mergeVertices(geometry2);
-geometry2.computeTangents();
+// let geometry2 = new THREE.IcosahedronGeometry(2.5, 50);
+// geometry2 = mergeVertices(geometry2);
+// geometry2.computeTangents();
 
-const wobble = new THREE.Mesh(geometry2, material);
-wobble.customDepthMaterial = depthMaterial;
-wobble.position.set(1, 1, 1);
+// const wobble = new THREE.Mesh(geometry2, material);
+// wobble.customDepthMaterial = depthMaterial;
+// wobble.position.set(1, 1, 1);
 // scene.add(wobble);
 
 // ==== MediaPipe Holistic Setup ====
@@ -332,11 +332,11 @@ function updateBlobMesh(trianglePoints) {
 
   let geometry = new THREE.BufferGeometry();
   geometry.setAttribute("position", new THREE.BufferAttribute(vertices, 3));
-  geometry = mergeVertices(geometry);
+  // geometry = mergeVertices(geometry);
   geometry.computeVertexNormals();
 
-  const mesh = new THREE.Mesh(geometry, material);
-  mesh.customDepthMaterial = depthMaterial;
+  const mesh = new THREE.Mesh(geometry, blobMaterial);
+  // mesh.customDepthMaterial = depthMaterial;
   mesh.userData.isBlob = true;
 
   scene.add(mesh);
@@ -373,9 +373,9 @@ animate();
 const clock = new THREE.Clock();
 
 const tick = () => {
-  const elapsedTime = clock.getElapsedTime();
+  // const elapsedTime = clock.getElapsedTime();
 
-  uniforms.uTime.value = elapsedTime;
+  // uniforms.uTime.value = elapsedTime;
 
   // Render
   renderer.render(scene, camera);
