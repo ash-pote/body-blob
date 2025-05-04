@@ -150,7 +150,7 @@ function updateBlobFromResults(results) {
         -(nose.y - 0.5) * 10,
         (nose.z || 0) * 10
       ),
-      radius: 0.5,
+      radius: 0.7,
     });
   }
 
@@ -159,7 +159,7 @@ function updateBlobFromResults(results) {
     metaBalls.push({
       center: new THREE.Vector3(
         (leftIndexTip.x - 0.5) * 11,
-        -(leftIndexTip.y - 0.5) * 5,
+        -(leftIndexTip.y - 0.5) * 3,
         (leftIndexTip.z || 0) * 10
       ),
       radius: 0.01,
@@ -171,7 +171,7 @@ function updateBlobFromResults(results) {
     metaBalls.push({
       center: new THREE.Vector3(
         (leftElbow.x - 0.5) * 17,
-        -(leftElbow.y - 0.5) * 5,
+        -(leftElbow.y - 0.5) * 3,
         (leftElbow.z || 0) * 10
       ),
       radius: 0.01,
@@ -183,7 +183,7 @@ function updateBlobFromResults(results) {
     metaBalls.push({
       center: new THREE.Vector3(
         (rightIndexTip.x - 0.5) * 11,
-        -(rightIndexTip.y - 0.5) * 5,
+        -(rightIndexTip.y - 0.5) * 3,
         (rightIndexTip.z || 0) * 10
       ),
       radius: 0.01,
@@ -195,10 +195,34 @@ function updateBlobFromResults(results) {
     metaBalls.push({
       center: new THREE.Vector3(
         (rightElbow.x - 0.5) * 17,
-        -(rightElbow.y - 0.5) * 5,
+        -(rightElbow.y - 0.5) * 3,
         (rightElbow.z || 0) * 10
       ),
       radius: 0.01,
+    });
+  }
+
+  const leftKnee = results.poseLandmarks?.[25];
+  if (leftKnee) {
+    metaBalls.push({
+      center: new THREE.Vector3(
+        (leftKnee.x - 0.5) * 26, // Adjust scaling as needed
+        -(leftKnee.y - 0.5) * 5.3, // Adjust scaling as needed
+        (leftKnee.z || 0) * 10 // Adjust scaling as needed
+      ),
+      radius: 0.1, // Adjust radius as needed
+    });
+  }
+
+  const rightKnee = results.poseLandmarks?.[26];
+  if (rightKnee) {
+    metaBalls.push({
+      center: new THREE.Vector3(
+        (rightKnee.x - 0.5) * 26, // Adjust scaling as needed
+        -(rightKnee.y - 0.5) * 5.3, // Adjust scaling as needed
+        (rightKnee.z || 0) * 10 // Adjust scaling as needed
+      ),
+      radius: 0.1, // Adjust radius as needed
     });
   }
 
