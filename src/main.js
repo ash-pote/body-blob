@@ -150,7 +150,7 @@ function updateBlobFromResults(results) {
         -(nose.y - 0.5) * 10,
         (nose.z || 0) * 10
       ),
-      radius: 1.1,
+      radius: 0.5,
     });
   }
 
@@ -158,11 +158,23 @@ function updateBlobFromResults(results) {
   if (leftIndexTip) {
     metaBalls.push({
       center: new THREE.Vector3(
-        (leftIndexTip.x - 0.5) * 20,
+        (leftIndexTip.x - 0.5) * 11,
         -(leftIndexTip.y - 0.5) * 5,
         (leftIndexTip.z || 0) * 10
       ),
-      radius: 0.1,
+      radius: 0.01,
+    });
+  }
+
+  const leftElbow = results.poseLandmarks?.[13];
+  if (leftElbow) {
+    metaBalls.push({
+      center: new THREE.Vector3(
+        (leftElbow.x - 0.5) * 17,
+        -(leftElbow.y - 0.5) * 5,
+        (leftElbow.z || 0) * 10
+      ),
+      radius: 0.01,
     });
   }
 
@@ -170,11 +182,23 @@ function updateBlobFromResults(results) {
   if (rightIndexTip) {
     metaBalls.push({
       center: new THREE.Vector3(
-        (rightIndexTip.x - 0.5) * 20,
+        (rightIndexTip.x - 0.5) * 11,
         -(rightIndexTip.y - 0.5) * 5,
         (rightIndexTip.z || 0) * 10
       ),
-      radius: 0.1,
+      radius: 0.01,
+    });
+  }
+
+  const rightElbow = results.poseLandmarks?.[14];
+  if (rightElbow) {
+    metaBalls.push({
+      center: new THREE.Vector3(
+        (rightElbow.x - 0.5) * 17,
+        -(rightElbow.y - 0.5) * 5,
+        (rightElbow.z || 0) * 10
+      ),
+      radius: 0.01,
     });
   }
 
@@ -197,7 +221,7 @@ const holistic = new Holistic({
 });
 
 holistic.setOptions({
-  modelComplexity: 0,
+  modelComplexity: 1,
   smoothLandmarks: false,
   enableSegmentation: false,
   refineFaceLandmarks: false,
