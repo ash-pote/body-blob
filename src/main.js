@@ -106,10 +106,20 @@ replayBtn.addEventListener("click", () => {
 });
 
 function loadRandomPose() {
+  triggerGlitchEffect();
   fetch("/random-pose")
     .then((res) => res.json())
     .then((data) => replayPoseData(data))
     .catch((err) => console.error("Failed to load pose:", err));
+}
+function triggerGlitchEffect() {
+  const glitch = document.getElementById('glitch-overlay');
+  glitch.style.display = 'block';
+  glitch.style.animation = 'glitch 0.4s ease-out';
+
+  setTimeout(() => {
+    glitch.style.display = 'none';
+  }, 400);
 }
 
 function replayPoseData(data) {
