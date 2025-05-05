@@ -1,17 +1,22 @@
-import { defineConfig } from "vite";
-import glsl from "vite-plugin-glsl";
+import restart from 'vite-plugin-restart'
 
-export default defineConfig({
-  plugins: [glsl()],
+export default {
+  root: 'public', // Set root directory to 'public' for Vite
+  publicDir: 'public', // Vite will serve files from 'public' as static assets
   server: {
+    host: true,
+    open: !('SANDBOX_URL' in process.env || 'CODESANDBOX_HOST' in process.env),
     proxy: {
-      "/save": "http://localhost:3000", // Forward /save API requests to Express server
-      "/random-pose": "http://localhost:3000", // Forward /random-pose API requests to Express server
+      '/save': 'http://localhost:3000', // Forward /save API requests to Express server
+      '/random-pose': 'http://localhost:3000', // Forward /random-pose API requests to Express server
     },
   },
   build: {
-    outDir: "dist",
+    outDir: 'dist',
     emptyOutDir: true,
     sourcemap: true,
   },
-});
+  plugins: [
+    restart({ restart: ['../static/**'] }), // Restart server on static file change
+  ],
+};
