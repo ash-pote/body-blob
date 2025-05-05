@@ -42,10 +42,27 @@
         left: 0;
         z-index: 300;
       }
+
+      #ui-save {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        z-index: 300;
+
+        display: flex; /* Apply flexbox if you want child alignment */
+        justify-content: center;
+        align-items: center;
+
+        font-size: 16px;
+        color: white;
+        pointer-events: auto; /* Ensure it can be clicked if overlapping */
+      }
     </style>
   </head>
   <body>
     <button id="replayBtn">Replay Pose</button>
+    <p id="ui-save"></p>
     <!-- Needed for MediaPipe video input -->
     <video id="video" autoplay muted playsinline></video>
 
