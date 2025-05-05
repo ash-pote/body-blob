@@ -4,7 +4,6 @@ import * as THREE from "three";
 import { edgeTable, triTable } from "./LookupTables";
 
 const resolution = 60;
-const scale = 10;
 const domain = 20; // larger than scale
 
 const isolevel = 0.5;
@@ -43,7 +42,7 @@ export function marchingCubes() {
   for (const metaBall of metaBalls) {
     for (let i = 0; i < points.length; i++) {
       const distance =
-        metaBall.radius - metaBall.center.distanceTo(points[i]) * 1.0;
+        metaBall.radius - metaBall.center.distanceTo(points[i]) * 1.3;
       values[i] += Math.exp(-(distance * distance));
     }
   }

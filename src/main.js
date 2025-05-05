@@ -150,11 +150,11 @@ function updateBlobFromResults(results) {
         -(nose.y - 0.5) * 10,
         (nose.z || 0) * 10
       ),
-      radius: 0.7,
+      radius: 1.5,
     });
   }
 
-  const leftIndexTip = results.leftHandLandmarks?.[8];
+  const leftIndexTip = results.leftHandLandmarks?.[9];
   if (leftIndexTip) {
     metaBalls.push({
       center: new THREE.Vector3(
@@ -162,23 +162,11 @@ function updateBlobFromResults(results) {
         -(leftIndexTip.y - 0.5) * 3,
         (leftIndexTip.z || 0) * 10
       ),
-      radius: 0.01,
+      radius: 0.5,
     });
   }
 
-  const leftElbow = results.poseLandmarks?.[13];
-  if (leftElbow) {
-    metaBalls.push({
-      center: new THREE.Vector3(
-        (leftElbow.x - 0.5) * 17,
-        -(leftElbow.y - 0.5) * 3,
-        (leftElbow.z || 0) * 10
-      ),
-      radius: 0.01,
-    });
-  }
-
-  const rightIndexTip = results.rightHandLandmarks?.[8];
+  const rightIndexTip = results.rightHandLandmarks?.[9];
   if (rightIndexTip) {
     metaBalls.push({
       center: new THREE.Vector3(
@@ -186,19 +174,7 @@ function updateBlobFromResults(results) {
         -(rightIndexTip.y - 0.5) * 3,
         (rightIndexTip.z || 0) * 10
       ),
-      radius: 0.01,
-    });
-  }
-
-  const rightElbow = results.poseLandmarks?.[14];
-  if (rightElbow) {
-    metaBalls.push({
-      center: new THREE.Vector3(
-        (rightElbow.x - 0.5) * 17,
-        -(rightElbow.y - 0.5) * 3,
-        (rightElbow.z || 0) * 10
-      ),
-      radius: 0.01,
+      radius: 0.5,
     });
   }
 
@@ -207,10 +183,10 @@ function updateBlobFromResults(results) {
     metaBalls.push({
       center: new THREE.Vector3(
         (leftKnee.x - 0.5) * 26, // Adjust scaling as needed
-        -(leftKnee.y - 0.5) * 5.3, // Adjust scaling as needed
+        -(leftKnee.y - 0.5) * 6.3, // Adjust scaling as needed
         (leftKnee.z || 0) * 10 // Adjust scaling as needed
       ),
-      radius: 0.1, // Adjust radius as needed
+      radius: 0.7, // Adjust radius as needed
     });
   }
 
@@ -219,17 +195,17 @@ function updateBlobFromResults(results) {
     metaBalls.push({
       center: new THREE.Vector3(
         (rightKnee.x - 0.5) * 26, // Adjust scaling as needed
-        -(rightKnee.y - 0.5) * 5.3, // Adjust scaling as needed
+        -(rightKnee.y - 0.5) * 6.3, // Adjust scaling as needed
         (rightKnee.z || 0) * 10 // Adjust scaling as needed
       ),
-      radius: 0.1, // Adjust radius as needed
+      radius: 0.7, // Adjust radius as needed
     });
   }
 
   if (results.poseLandmarks) {
     const torso = getTorsoCenter(results.poseLandmarks);
     if (torso) {
-      metaBalls.push({ center: torso, radius: 2.1 });
+      metaBalls.push({ center: torso, radius: 3.0 });
     }
   }
 
