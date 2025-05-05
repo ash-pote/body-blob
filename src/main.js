@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 import { Holistic } from "@mediapipe/holistic";
 import { Camera } from "@mediapipe/camera_utils";
-import { marchingCubes, metaBalls, gridHelper } from "./MarchingCubes";
+import { marchingCubes, metaBalls } from "./MarchingCubes";
 
 // ==== DOM Setup ====
 const container = document.getElementById("container");
@@ -338,6 +338,17 @@ function render() {
 
 function animate() {
   requestAnimationFrame(animate);
+
+  const uiSave = document.getElementById("ui-save");
+  if (isRecording) {
+    // Show "Press R once to record" when not recording
+    uiSave.textContent = "Learning";
+  } else if (isReplaying) {
+    uiSave.textContent = "This is what I learnt";
+  } else if (!isRecording && !isReplaying) {
+    uiSave.textContent = "Press R once to record";
+  }
+
   render();
 }
 animate();
